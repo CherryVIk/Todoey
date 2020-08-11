@@ -7,18 +7,18 @@
 //
 
 import UIKit
-import CoreData
+//import CoreData
 
 class ToDoListViewController: UITableViewController{
     
     var itemArray = [Item]()
     var selectedCategory: Category? {
         didSet{
-            loadItems()
+//            loadItems()
         }
     }
 //    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+//    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     
     override func viewDidLoad() {
@@ -54,7 +54,7 @@ class ToDoListViewController: UITableViewController{
 //        itemArray.remove(at: indexPath.row)
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
-        saveData()
+//        saveData()
         
         tableView.reloadData()
         
@@ -71,14 +71,14 @@ class ToDoListViewController: UITableViewController{
             //Read TextFields text data
             if textField.text != "" {
                 
-                let item = Item(context: self.context)
-                item.title = textField.text!
-                item.done = false
-                item.parentCategory = self.selectedCategory
-                self.itemArray.append(item)
-                self.saveData()
-                //                self.defaults.set(self.itemArray, forKey: "ToDoListItems")
-                self.tableView.reloadData()
+//                let item = Item(context: self.context)
+//                item.title = textField.text!
+//                item.done = false
+//                item.parentCategory = self.selectedCategory
+//                self.itemArray.append(item)
+//                self.saveData()
+//                //                self.defaults.set(self.itemArray, forKey: "ToDoListItems")
+//                self.tableView.reloadData()
             }
         }
         alert.addAction(save)
@@ -92,55 +92,55 @@ class ToDoListViewController: UITableViewController{
     //MARK: - Model Manipulation Methods
     func saveData(){
         do {
-            try self.context.save()
+//            try self.context.save()
         } catch  {
              print("Error saving context, \(error)")
         }
 
     }
 
-    func loadItems(with request : NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil){
-        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
-        
-        if let additionalPredicate: NSPredicate = predicate{
-            request.predicate  = NSCompoundPredicate(andPredicateWithSubpredicates: [additionalPredicate, categoryPredicate])
-        } else{
-            request.predicate = categoryPredicate
-        }
-        
-        do {
-            itemArray = try context.fetch(request)
-        } catch  {
-            print("Error fetching data from context \(error)")
-        }
-        tableView.reloadData()
-    }
+//    func loadItems(with request : NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil){
+//        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+//
+//        if let additionalPredicate: NSPredicate = predicate{
+//            request.predicate  = NSCompoundPredicate(andPredicateWithSubpredicates: [additionalPredicate, categoryPredicate])
+//        } else{
+//            request.predicate = categoryPredicate
+//        }
+//
+//        do {
+//            itemArray = try context.fetch(request)
+//        } catch  {
+//            print("Error fetching data from context \(error)")
+//        }
+//        tableView.reloadData()
+//    }
 }
     //MARK: - SearchBar Methods
 
-extension ToDoListViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
-        
-        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-        
-        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-
-        loadItems(with: request, predicate: predicate )
-       
-    }
+//extension ToDoListViewController: UISearchBarDelegate {
+//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+//        let request: NSFetchRequest<Item> = Item.fetchRequest()
+//
+//        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+//
+//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+//
+//        loadItems(with: request, predicate: predicate )
+//
+//    }
+//
+//    //can be triggered when a user presses crossButton
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        if searchBar.text?.count == 0 {
+//            loadItems()
+//        }
+//        DispatchQueue.main.async {
+//            searchBar.resignFirstResponder() //you are overthrown from being active in searchTextField)))
+//        }
+//
+//    }
     
-    //can be triggered when a user presses crossButton
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchBar.text?.count == 0 {
-            loadItems()
-        }
-        DispatchQueue.main.async {
-            searchBar.resignFirstResponder() //you are overthrown from being active in searchTextField)))
-        }
-       
-    }
     
-    
-}
+//}
 

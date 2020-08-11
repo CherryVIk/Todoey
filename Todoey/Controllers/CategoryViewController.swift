@@ -7,17 +7,16 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class CategoryViewController: UITableViewController {
     
-    var categoryArray = [Category]()
-//    var categories = ["Category 1","Category 2", "Category 3"]
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-
+    let realm = try! Realm()
+    var categoryArray: Results<Category>?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+//        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
         loadCategories()
 
@@ -26,13 +25,13 @@ class CategoryViewController: UITableViewController {
   
     //MARK: - TableView DataSource Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categoryArray.count
+        return categoryArray?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
        
-        cell.textLabel?.text = categoryArray[indexPath.row].name
+        cell.textLabel?.text = categoryArray?[indexPath.row].name ?? "No categories added"
         
         return cell
     }
@@ -40,22 +39,20 @@ class CategoryViewController: UITableViewController {
     
     
     //MARK: - Data Manipulation Methods
-    func saveCategories(){
+    func saveCategories(category : Category){
         do {
-            try context.save()
+            try realm.write {
+                realm.add(category)
+            }
         } catch  {
-            print("Error saving data from context")
+            print("Error adding category in realm")
         }
         tableView.reloadData()
     }
+    
     func loadCategories(){
-        let request: NSFetchRequest<Category> = Category.fetchRequest()
-        do {
-            // you get data using intermidiary (context) from database
-            categoryArray = try context.fetch(request)
-        } catch  {
-            print("Error fetching data from context")
-        }
+        categoryArray = realm.objects(Category.self)
+        tableView.reloadData()
     }
     
     
@@ -65,12 +62,12 @@ class CategoryViewController: UITableViewController {
         let action = UIAlertAction(title: "Add category", style: .default) { (action) in
             let category = alert.textFields![0]
             if category.text?.count != 0 {
-                let item = Category(context: self.context)
-                item.name = category.text!
-                self.categoryArray.append(item)
+                let newCategory = Category()
+                newCategory.name = category.text!
+                self.saveCategories(category: newCategory)
             }
-            self.saveCategories()
-          
+           
+
         }
         alert.addTextField { (textField) in
         
@@ -87,7 +84,7 @@ class CategoryViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! ToDoListViewController
         if let indexPath = tableView.indexPathForSelectedRow {
-            destinationVC.selectedCategory = categoryArray[indexPath.row]
+            destinationVC.selectedCategory = categoryArray?[indexPath.row]
         }
     }
 }
